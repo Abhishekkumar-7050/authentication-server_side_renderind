@@ -1,15 +1,15 @@
 const express = require("express");
 const { connectToMongoDB } = require("./connection.js");
 const path = require("path");
-var cookieParser = require('cookie-parser')
-const authRouter = require('./routes/auth.js');
-const bodyParser = require('body-parser')
+const cookieParser = require("cookie-parser");
+const authRouter = require("./routes/auth.js");
+const bodyParser = require("body-parser");
 
-
+const { restrictToLoggedinUserOnly,checkAuth } = require("./middeleware/auth.js");
 
 const app = express();
 
-// for server side rendering 
+// for server side rendering
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
@@ -22,31 +22,23 @@ app.use(express.json());
 require("dotenv").config();
 bodyParser.json();
 
-
 // database connections
 connectToMongoDB(process.env.MONGO_URI).then(() =>
   console.log("Mongodb connected ")
 );
 
 // routes
-app.use("/user",authRouter);
+app.use("/user", authRouter);
 
-app.get('/signup', (req, res)=>{
-  return res.render('signup');
-})
+app.get("/signup", (req, res) => {
+  return res.render("signup");
+});
 
-app.get('/login', (req, res)=>{
-  return res.render('login');
-})
-app.get('/', (req, res)=>{
-  return res.render('home');
-})
-
-
-
-
-
-
-    
+app.get("/login", checkAuth, (req, res) => {
+  return res.render("login");
+});
+app.get("/", restrictToLoggedinUserOnly, (req, res) => {
+  return res.render("home");
+});
 
 app.listen(PORT, () => console.log(`Server Started at PORT:${PORT}`));

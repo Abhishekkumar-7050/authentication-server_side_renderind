@@ -9,11 +9,11 @@ const { use } = require("../routes/auth");
 
 async function handleUserLogin(req, res) {
   const { email, password } = req.body;
-  console.log(" body me kya aa rha ha", email ," ", password);
+  // console.log(" body me kya aa rha ha", email ," ", password);
   const user = await USER.findOne({ email, password });
-  console.log(" user is", user);
+  // console.log(" user is", user);
   if (!user){
-    console.log(" user not found");
+    // console.log(" user not found");
     return res.render("login", {
       error: "Invalid Username or Password",
     });
